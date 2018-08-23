@@ -39,5 +39,11 @@ public class NotaController {
 		List<Pessoa> pessoas = this.pessoaRepository.findAll();
 		return pessoas;
 	}*/
+	
+	@RequestMapping(value="/listar",method = RequestMethod.GET)
+	public List<Nota> listarNotas() {
+		List<Nota> notas = notaRepository.findAll();
+		return notas;
+	}
 
 }
