@@ -5,8 +5,9 @@ import br.com.danielfarias.caixaeletronico.model.Nota;
 
 public interface NotaRepositoryCustom {
 	
-	String sacar(Double valor);
+	List<Nota> sacar(Double valor);
 	
 	List<Nota> listarNotasDisponiveis();
-
+	
+	Double obterEstoqueTotal();
 }

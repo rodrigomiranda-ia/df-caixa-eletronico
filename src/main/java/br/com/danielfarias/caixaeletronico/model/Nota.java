@@ -2,14 +2,10 @@ package br.com.danielfarias.caixaeletronico.model;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
-
-import br.com.danielfarias.caixaeletronico.enums.ValorNota;
 
 @Entity
 @Table(name = "nota")
@@ -21,13 +17,15 @@ public class Nota {
 	private Long id;
 	
 	@Column(name = "valor_nota", unique = true)
-	@Enumerated(EnumType.STRING)
-	private ValorNota valorNota;
+	private Double valorNota;
+
 	
 	@Column(name = "quantidade_notas")
 	private Integer quantidadeNotas;
+	
+	public Nota(){}
 
-	public Nota(ValorNota valorNota, Integer quantidadeNotas) {
+	public Nota(Double valorNota, Integer quantidadeNotas) {
 		super();
 		this.valorNota = valorNota;
 		this.quantidadeNotas = quantidadeNotas;
@@ -41,11 +39,11 @@ public class Nota {
 		this.id = id;
 	}
 
-	public ValorNota getValorNota() {
+	public Double getValorNota() {
 		return valorNota;
 	}
 
-	public void setValorNota(ValorNota valorNota) {
+	public void setValorNota(Double valorNota) {
 		this.valorNota = valorNota;
 	}
 
