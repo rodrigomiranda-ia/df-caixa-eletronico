@@ -15,24 +15,17 @@ public class NotaRepositoryImpl implements NotaRepositoryCustom{
 	
 	@Override
 	public List<Nota> sacar(Double valorSaque){
-		Double estoque = obterEstoqueTotal();
-		if(estoque > valorSaque){
-			List<Nota> notasDisponiveis = notaRepository.findAll();
-			Nota nota50 = notasDisponiveis.stream().filter(n -> Constantes.CINQUENTA.equals(n.getValorNota())).findAny().orElse(null);
-			Nota nota20 = notasDisponiveis.stream().filter(n -> Constantes.VINTE.equals(n.getValorNota())).findAny().orElse(null);
-			Nota nota10 = notasDisponiveis.stream().filter(n -> Constantes.DEZ.equals(n.getValorNota())).findAny().orElse(null);
-			Nota nota5 = notasDisponiveis.stream().filter(n -> Constantes.CINCO.equals(n.getValorNota())).findAny().orElse(null);
-			Nota nota2 = notasDisponiveis.stream().filter(n -> Constantes.DOIS.equals(n.getValorNota())).findAny().orElse(null);
-			
-			List<Nota> notasNecessarias = new ArrayList<>();
-			calcularQuantidadeNotas(valorSaque, nota50.getQuantidadeNotas(), nota20.getQuantidadeNotas(), nota10.getQuantidadeNotas(), nota5.getQuantidadeNotas(), nota2.getQuantidadeNotas(),notasNecessarias);
-			return notasNecessarias;
-			
-		}else{
-			System.out.println("Sem grana!");
-			return null;
-		}
+		List<Nota> notasDisponiveis = notaRepository.findAll();
+		Nota nota50 = notasDisponiveis.stream().filter(n -> Constantes.CINQUENTA.equals(n.getValorNota())).findAny().orElse(null);
+		Nota nota20 = notasDisponiveis.stream().filter(n -> Constantes.VINTE.equals(n.getValorNota())).findAny().orElse(null);
+		Nota nota10 = notasDisponiveis.stream().filter(n -> Constantes.DEZ.equals(n.getValorNota())).findAny().orElse(null);
+		Nota nota5 = notasDisponiveis.stream().filter(n -> Constantes.CINCO.equals(n.getValorNota())).findAny().orElse(null);
+		Nota nota2 = notasDisponiveis.stream().filter(n -> Constantes.DOIS.equals(n.getValorNota())).findAny().orElse(null);
 		
+		List<Nota> notasNecessarias = new ArrayList<>();
+		calcularQuantidadeNotas(valorSaque, nota50.getQuantidadeNotas(), nota20.getQuantidadeNotas(), nota10.getQuantidadeNotas(), nota5.getQuantidadeNotas(), nota2.getQuantidadeNotas(),notasNecessarias);
+		atualizarEstoque(notasNecessarias);
+		return notasNecessarias;
 	}
 
 	@Override
@@ -45,18 +38,32 @@ public class NotaRepositoryImpl implements NotaRepositoryCustom{
 		return notaRepository.obterEstoqueTotal();
 	}
 	
+	@Override
+	public Nota salvar(Nota nota) {
+		return notaRepository.save(nota);	
+	}
+	
+	private void atualizarEstoque(List<Nota> notas) {
+		for(Nota n: notas) {
+			Nota nota = notaRepository.findByValorNota(n.getValorNota());
+			Integer qtdNotasAtual = nota.getQuantidadeNotas() - n.getQuantidadeNotas(); //Subtraio as notas utilzadas no saque
+			nota.setQuantidadeNotas(qtdNotasAtual);
+			notaRepository.save(nota);
+		}
+	}
+	
 	private List<Nota> calcularQuantidadeNotas(Double valorSaque,Integer qtdNotas50,Integer qtdNotas20,Integer qtdNotas10,Integer qtdNotas5,Integer qtdNotas2,List<Nota> notas) {
 		Double resto = 0.0;
 		Integer resultado = 0;
 		Double valorNota = 0.0;
 		
-		if(valorSaque >= Constantes.CINQUENTA && qtdNotas50 > 0) { //testo se o valor √© maior ou igual a esta nota e se tem notas dispon√≠veis deste valor
+		if(valorSaque >= Constantes.CINQUENTA && qtdNotas50 > 0) { //testo se o valor È maior ou igual a esta nota e se tem notas dispon√≠veis deste valor
 			valorNota = Constantes.CINQUENTA;
 			resultado = calcularDivisao(valorSaque, valorNota).intValue();
 			if(qtdNotas50 >= resultado){ //se tiver notas suficientes em estoque, subtraio as notas usadas do estoque
 				qtdNotas50 -= resultado;
 				resto = calcularResto(valorSaque, valorNota);
-			}else { //se n√£o tiver notas suficientes, pego todas as notas dispon√≠veis
+			}else { //se n„o tiver notas suficientes, pego todas as notas disponÌveis
 				resultado = qtdNotas50;
 				resto = valorSaque - (qtdNotas50 * valorNota);
 				qtdNotas50 = 0;

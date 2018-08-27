@@ -11,4 +11,6 @@ public interface NotaRepository extends JpaRepository<Nota,Long>{
 	
 	@Query("SELECT SUM(n.valorNota * n.quantidadeNotas) from Nota n")
 	Double obterEstoqueTotal();
+	
+	Nota findByValorNota(Double valor);
 }

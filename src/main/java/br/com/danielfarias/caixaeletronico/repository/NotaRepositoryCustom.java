@@ -10,4 +10,6 @@ public interface NotaRepositoryCustom {
 	List<Nota> listarNotasDisponiveis();
 	
 	Double obterEstoqueTotal();
+	
+	Nota salvar(Nota nota);
 }
